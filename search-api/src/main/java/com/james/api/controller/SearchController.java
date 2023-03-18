@@ -1,5 +1,6 @@
 package com.james.api.controller;
 
+import com.james.api.feign.dto.response.GetSearchBlogResponseDto;
 import com.james.api.service.SearchService;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -17,13 +18,13 @@ public class SearchController {
     private final SearchService searchService;
 
     /**
-     * 테스트 컨트롤러
+     * 블로그 검색 컨트롤러
      *
-     * @param parameter1 테스트 파라미터
+     * @param keyword 검색어
      */
-    @GetMapping(value = "/test")
-    public boolean getTemplateList(
-            @Parameter(name = "parameter1", description = "테스트 파라미터") @RequestParam String parameter1) {
-        return searchService.isEmpty(parameter1);
+    @GetMapping(value = "/blog")
+    public GetSearchBlogResponseDto getBlogList(
+            @Parameter(name = "keyword", description = "테스트 파라미터") @RequestParam String keyword) {
+        return searchService.getBlogList(keyword);
     }
 }

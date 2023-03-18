@@ -8,5 +8,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     // swagger
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
+    // Feign client
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:3.1.5'
 
 }
