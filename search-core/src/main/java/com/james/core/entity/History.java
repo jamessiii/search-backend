@@ -1,12 +1,15 @@
-package com.james.core.domain.entity;
+package com.james.core.entity;
 
-import lombok.ToString;
+import lombok.*;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
+@Getter
+@Setter
+@Entity
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class History extends BaseEntity {
 
     @Id

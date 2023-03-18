@@ -1,4 +1,4 @@
-package com.james.core.domain.entity;
+package com.james.core.entity;
 
 import lombok.Getter;
 import lombok.Setter;
