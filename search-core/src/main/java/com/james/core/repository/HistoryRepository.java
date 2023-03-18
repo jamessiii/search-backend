@@ -1,7 +1,7 @@
 package com.james.core.repository;
 
-import com.james.core.domain.entity.History;
-import com.james.core.domain.entity.Search;
+import com.james.core.entity.History;
+import com.james.core.entity.Search;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
