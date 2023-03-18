@@ -1,0 +1,34 @@
+spring:
+  jpa:
+    show-sql: true
+    database: h2
+    properties:
+      hibernate:
+        format_sql: true
+        globally_quoted_identifiers: true
+    hibernate:
+      ddl-auto: create
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: "jdbc:h2:mem:GRADE;MODE=MYSQL;DB_CLOSE_DELAY=-1"
+
+management:
+  endpoints:
+    web:
+      # default 값이 /actuator endpoint는 외부에 잘 알려져 있어 보안을 위해 다른 endpoint 사용
+      base-path: /monitor
+      # 마찬가지 이유로 /health endpoint 대신 다른 endpoint 사용
+      path-mapping:
+        health: health_check
+      exposure:
+        # 보안을 위해 health check 하는 endpoint만 exposure
+        include: health
+    enabled-by-default: false
+  endpoint:
+    health:
+      enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger
+    display-request-duration: true

@@ -1,19 +1,35 @@
 plugins {
+    id 'org.springframework.boot' version '2.7.5' apply false
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE' apply false
     id 'java'
+    id "io.freefair.lombok" version "6.4.0" apply false
 }
 
-group 'org.james'
-version '1.0-SNAPSHOT'
+subprojects {
+    group = 'com.james'
+    sourceCompatibility = '17'
 
-repositories {
-    mavenCentral()
-}
+    repositories {
+        mavenCentral()
+    }
 
-dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
-}
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'io.freefair.lombok'
 
-test {
-    useJUnitPlatform()
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+
+    // common dependencies
+    dependencies {
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
+
+    test {
+        useJUnitPlatform()
+    }
 }

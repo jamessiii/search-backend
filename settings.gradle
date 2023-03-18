@@ -1,2 +1,4 @@
 rootProject.name = 'search-backend'
+include 'search-api'
+include 'search-core'
 

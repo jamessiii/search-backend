@@ -1,0 +1,10 @@
+// api 에서만 필요한 dependency 추가
+dependencies {
+    implementation project(':search-core')
+
+    // actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    // swagger
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
+
+}
