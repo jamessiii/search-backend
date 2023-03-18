@@ -4,6 +4,8 @@ dependencies {
 
     // actuator
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    // JpaConfiguration 을 위한 dependency
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     // swagger
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
 
