@@ -1,13 +1,12 @@
 package com.james.api.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.james.api.dto.GetSearchBlogResponseDto;
 import com.james.api.enumeration.SortEnum;
 import com.james.api.feign.SearchKakaoFeignClient;
 import com.james.api.feign.dto.response.GetSearchKakaoBlogResponseDto;
 import com.james.core.entity.History;
 import com.james.core.entity.Search;
-import com.james.core.exception.NoResponseFromServer;
+import com.james.core.exception.NoResponseFromServerException;
 import com.james.core.exception.NotFoundSearchException;
 import com.james.core.repository.HistoryRepository;
 import com.james.core.repository.SearchRepository;
@@ -49,7 +48,7 @@ public class SearchService {
                 BeanUtils.copyProperties(data, tmpDocument);
                 documentList.add(tmpDocument);
             }
-        } catch (NoResponseFromServer noResponseFromServer) {
+        } catch (NoResponseFromServerException noResponseFromServerException) {
             // 네이버 요청
         }
 

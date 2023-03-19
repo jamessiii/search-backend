@@ -2,11 +2,9 @@ package com.james.api.feign.decoder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.james.core.exception.BadRequestException;
-import com.james.core.exception.NoResponseFromServer;
+import com.james.core.exception.NoResponseFromServerException;
 import feign.Response;
 import feign.codec.ErrorDecoder;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,7 +22,7 @@ public class FeignKakaoErrorDecoder  implements ErrorDecoder {
 
         switch (response.status()){
             case 500:
-                throw new NoResponseFromServer();
+                throw new NoResponseFromServerException();
             case 400:
                 try {
                     String bodyString = new BufferedReader(new InputStreamReader(response.body().asInputStream(), StandardCharsets.UTF_8)).lines()
