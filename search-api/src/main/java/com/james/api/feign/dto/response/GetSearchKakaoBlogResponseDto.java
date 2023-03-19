@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GetSearchBlogResponseDto {
+public class GetSearchKakaoBlogResponseDto {
 
     @JsonAlias(value = "meta")
     private Meta meta;
@@ -66,7 +66,7 @@ public class GetSearchBlogResponseDto {
 
         // 블로그 글 작성시간, ISO 8601\n[YYYY]-[MM]-[DD]T[hh]:[mm]:[ss].000+[tz]
         @JsonAlias(value = "datetime")
-        private String dateTime;
+        private LocalDateTime dateTime;
 
     }
 }

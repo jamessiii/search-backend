@@ -32,3 +32,6 @@ springdoc:
   swagger-ui:
     path: /swagger
     display-request-duration: true
+
+kakao:
+  api-key: ${KAKAO_API_KEY}

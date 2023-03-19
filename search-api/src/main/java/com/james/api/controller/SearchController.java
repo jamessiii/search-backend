@@ -1,9 +1,12 @@
 package com.james.api.controller;
 
-import com.james.api.feign.dto.response.GetSearchBlogResponseDto;
+import com.james.api.dto.GetSearchBlogResponseDto;
+import com.james.api.enumeration.SortEnum;
+import com.james.api.feign.dto.response.GetSearchKakaoBlogResponseDto;
 import com.james.api.service.SearchService;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,8 +26,11 @@ public class SearchController {
      * @param keyword 검색어
      */
     @GetMapping(value = "/blog")
-    public GetSearchBlogResponseDto getBlogList(
-            @Parameter(name = "keyword", description = "테스트 파라미터") @RequestParam String keyword) {
-        return searchService.getBlogList(keyword);
+    public Page<GetSearchBlogResponseDto> getBlogList(
+            @RequestParam @Parameter(description = "테스트 파라미터") String keyword,
+            @RequestParam @Parameter(description = "현재 페이지 번호") SortEnum sort,
+            @RequestParam @Parameter(description = "현재 페이지 번호") int page,
+            @RequestParam @Parameter(description = "한 페이지에 보일 목록 수") int size) {
+        return searchService.getBlogList(keyword, sort, page, size);
     }
 }
