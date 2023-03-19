@@ -5,10 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.james.api.deserializer.DateTimeDeserializer;
-import feign.FeignException;
+import com.james.api.feign.deserializer.DateTimeDeserializer;
 import feign.Response;
-import feign.codec.DecodeException;
 import feign.codec.Decoder;
 
 import java.io.BufferedReader;
