@@ -27,7 +27,7 @@ public class SearchController {
      */
     @GetMapping(value = "/blog")
     public Page<GetSearchBlogResponseDto> getBlogList(
-            @RequestParam @Parameter(description = "테스트 파라미터") String keyword,
+            @RequestParam @Parameter(description = "검색어") String keyword,
             @RequestParam @Parameter(description = "현재 페이지 번호") SortEnum sort,
             @RequestParam @Parameter(description = "현재 페이지 번호") int page,
             @RequestParam @Parameter(description = "한 페이지에 보일 목록 수") int size) {
