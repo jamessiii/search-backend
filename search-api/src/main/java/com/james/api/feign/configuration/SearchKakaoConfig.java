@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Bean;
 public class SearchKakaoConfig {
 
     @Bean
-    public ErrorDecoder kakapErrorDecoder() {
+    public ErrorDecoder kakaoErrorDecoder() {
         return new FeignKakaoErrorDecoder();
     }
 
