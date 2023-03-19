@@ -35,15 +35,8 @@ public class FeignKakaoErrorDecoder  implements ErrorDecoder {
                 } catch (IOException ignore) {
                     throw new BadRequestException();
                 }
-            case 404:
-                if(methodKey.contains("getOrders")){
-                    return new ResponseStatusException(HttpStatus.valueOf(response.status()),
-                            "User's orders is empty.");
-                }
-                break;
             default:
                 return new Exception(response.reason());
         }
-        return null;
     }
 }
