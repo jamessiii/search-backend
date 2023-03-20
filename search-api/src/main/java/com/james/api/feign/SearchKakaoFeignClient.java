@@ -13,5 +13,5 @@ public interface SearchKakaoFeignClient {
 
     @GetMapping(value = "/v2/search/blog?query={query}&sort={sort}&size={size}&page={page}")
     GetSearchKakaoBlogResponseDto getBlogList(@RequestHeader(value = "Authorization", required = true) String authorizationHeader,
-                                              @PathVariable String query, @PathVariable SortEnum sort, @PathVariable Integer page, @PathVariable Integer size);
+                                              @PathVariable String query, @PathVariable String sort, @PathVariable Integer page, @PathVariable Integer size);
 }

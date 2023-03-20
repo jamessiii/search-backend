@@ -41,7 +41,7 @@ public class SearchService {
         List<GetSearchBlogResponseDto> documentList = new ArrayList<>();
 
         try {
-            responseFromKakao = searchKakaoFeignClient.getBlogList(authorization, keyword, sort, page, size);
+            responseFromKakao = searchKakaoFeignClient.getBlogList(authorization, keyword, sort.getCode(), page, size);
 
         } catch (NoResponseFromServerException noResponseFromServerException) {
             // 네이버 요청
@@ -51,7 +51,8 @@ public class SearchService {
             BeanUtils.copyProperties(data, tmpDocument);
             documentList.add(tmpDocument);
         }
-        return new PageImpl<>(documentList, PageRequest.of(page, size), documentList.size());
+        Integer totalCount = responseFromKakao.getMeta().getTotalCount();
+        return new PageImpl<>(documentList, PageRequest.of(page, size), totalCount);
     }
 
     private void saveHistory(String keyword) {
