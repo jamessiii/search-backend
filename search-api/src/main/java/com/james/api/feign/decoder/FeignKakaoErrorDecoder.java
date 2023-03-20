@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class FeignKakaoErrorDecoder  implements ErrorDecoder {
 
-    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public Exception decode(String methodKey, Response response) {

@@ -4,11 +4,9 @@ import com.james.api.dto.GetSearchBlogResponseDto;
 import com.james.api.enumeration.SortEnum;
 import com.james.api.feign.SearchKakaoFeignClient;
 import com.james.api.feign.dto.response.GetSearchKakaoBlogResponseDto;
-import com.james.core.entity.History;
 import com.james.core.entity.Search;
 import com.james.core.exception.NoResponseFromServerException;
 import com.james.core.exception.NotFoundSearchException;
-import com.james.core.repository.HistoryRepository;
 import com.james.core.repository.SearchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -29,7 +27,6 @@ public class SearchService {
     private String apiKey;
 
     private final SearchRepository searchRepository;
-    private final HistoryRepository historyRepository;
     private final SearchKakaoFeignClient searchKakaoFeignClient;
 
     public Page<GetSearchBlogResponseDto> getBlogList(String keyword, SortEnum sort, Integer page, Integer size) {
@@ -58,26 +55,11 @@ public class SearchService {
     private void saveHistory(String keyword) {
 
         Search search;
-        boolean isNewKeyword = false;
-
         try {
             search = searchRepository.findByKeyword(keyword).orElseThrow(NotFoundSearchException::new);
+            searchRepository.increaseCallCount(search.getId());
         } catch (NotFoundSearchException notFoundSearchException) {
-            isNewKeyword = true;
             search = new Search(keyword);
-        }
-
-        if (isNewKeyword) {
-            search = searchRepository.save(search);
-        }
-
-        History history = new History();
-        history.setSearch(search);
-        historyRepository.save(history);
-
-        if (!isNewKeyword) {
-            Long callCount = historyRepository.countBySearch(search);
-            search.setCallCount(callCount);
             searchRepository.save(search);
         }
     }
