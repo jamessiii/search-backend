@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface SearchRepository extends JpaRepository<Search, String> {
@@ -17,4 +18,5 @@ public interface SearchRepository extends JpaRepository<Search, String> {
     @Query("update Search t1 set t1.callCount=t1.callCount+1 where t1.id=:id")
     void increaseCallCount(Long id);
 
+    List<Search> findTop10ByOrderByCallCountDesc();
 }
