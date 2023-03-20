@@ -95,13 +95,13 @@ class SearchControllerTest {
                                 .param("size", String.valueOf(TEST_NORMAL_SIZE)))
                         .andExpect(status().isOk())
                         .andDo(print())
-                        .andExpect(jsonPath("$.content").exists())
-                        .andExpect(jsonPath("$.content.[0].blogName", is(TEST_BLOG_NAME)))
-                        .andExpect(jsonPath("$.content.[0].contents", is(TEST_CONTENTS)))
-                        .andExpect(jsonPath("$.content.[0].title", is(TEST_TITLE)))
-                        .andExpect(jsonPath("$.content.[0].url", is(TEST_URL)))
-                        .andExpect(jsonPath("$.content.[0].thumbNail", is(TEST_THUMB_NAIL)))
-                        .andExpect(jsonPath("$.content.[0].dateTime", is(TEST_DATE_TIME.toString())));
+                        .andExpect(jsonPath("$.data.content").exists())
+                        .andExpect(jsonPath("$.data.content.[0].blogName", is(TEST_BLOG_NAME)))
+                        .andExpect(jsonPath("$.data.content.[0].contents", is(TEST_CONTENTS)))
+                        .andExpect(jsonPath("$.data.content.[0].title", is(TEST_TITLE)))
+                        .andExpect(jsonPath("$.data.content.[0].url", is(TEST_URL)))
+                        .andExpect(jsonPath("$.data.content.[0].thumbNail", is(TEST_THUMB_NAIL)))
+                        .andExpect(jsonPath("$.data.content.[0].dateTime", is(TEST_DATE_TIME.toString())));
 
                 ArgumentCaptor<String> keywordCaptor = ArgumentCaptor.forClass(String.class);
                 ArgumentCaptor<SortEnum> sortCaptor = ArgumentCaptor.forClass(SortEnum.class);
