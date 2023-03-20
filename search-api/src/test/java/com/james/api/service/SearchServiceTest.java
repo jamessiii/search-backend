@@ -5,7 +5,6 @@ import com.james.api.enumeration.SortEnum;
 import com.james.api.feign.SearchKakaoFeignClient;
 import com.james.api.feign.dto.response.GetSearchKakaoBlogResponseDto;
 import com.james.core.entity.Search;
-import com.james.core.exception.NotFoundSearchException;
 import com.james.core.repository.SearchRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +19,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -93,7 +91,7 @@ class SearchServiceTest {
 
             @BeforeEach
             void setup() {
-                when(searchRepository.findByKeyword(TEST_NORMAL_KEYWORD)).thenThrow(new NotFoundSearchException());
+                when(searchRepository.findByKeyword(TEST_NORMAL_KEYWORD)).thenReturn(null);
             }
 
             @Test
@@ -135,7 +133,7 @@ class SearchServiceTest {
                 savedSearch.setKeyword(TEST_NORMAL_KEYWORD);
                 savedSearch.setCallCount(TEST_CALL_COUNT);
 
-                when(searchRepository.findByKeyword(TEST_NORMAL_KEYWORD)).thenThrow(new NotFoundSearchException());
+                when(searchRepository.findByKeyword(TEST_NORMAL_KEYWORD)).thenReturn(null);
                 when(searchRepository.save(any())).thenReturn(savedSearch);
             }
 
@@ -169,7 +167,7 @@ class SearchServiceTest {
                 search.setKeyword(TEST_NORMAL_KEYWORD);
                 search.setCallCount(TEST_CALL_COUNT);
 
-                when(searchRepository.findByKeyword(TEST_NORMAL_KEYWORD)).thenReturn(Optional.of(search));
+                when(searchRepository.findByKeyword(TEST_NORMAL_KEYWORD)).thenReturn(search);
             }
 
             @Test
@@ -186,7 +184,6 @@ class SearchServiceTest {
             }
         }
     }
-
 
     @Nested
     @DisplayName("getPopularKeywordList 메소드는")

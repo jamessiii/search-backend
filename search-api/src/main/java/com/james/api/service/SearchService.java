@@ -12,6 +12,7 @@ import com.james.core.repository.SearchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -55,13 +56,21 @@ public class SearchService {
 
     private void saveHistory(String keyword) {
 
-        Search search;
-        try {
-            search = searchRepository.findByKeyword(keyword).orElseThrow(NotFoundSearchException::new);
+        Search search = searchRepository.findByKeyword(keyword);
+
+        if (search != null) {
             searchRepository.increaseCallCount(search.getId());
-        } catch (NotFoundSearchException notFoundSearchException) {
-            search = new Search(keyword);
+            return;
+        }
+
+        search = new Search(keyword);
+        try {
             searchRepository.save(search);
+        } catch (DataIntegrityViolationException dataIntegrityViolationException) {
+            search = searchRepository.findByKeyword(keyword);
+            if (search == null)
+                throw new NotFoundSearchException();
+            searchRepository.increaseCallCount(search.getId());
         }
     }
 

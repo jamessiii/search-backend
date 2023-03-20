@@ -2,10 +2,7 @@ package com.james.core.entity;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Getter
 @Setter
@@ -14,14 +11,17 @@ import javax.persistence.Id;
 public class Search extends BaseEntity{
 
     @Id
+    @Column
     @ToString.Exclude
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     /* 검색어 */
+    @Column(unique = true)
     private String keyword;
 
     /* 검색횟수 */
+    @Column(nullable = false)
     private Long callCount;
 
     public Search(String keyword) {
