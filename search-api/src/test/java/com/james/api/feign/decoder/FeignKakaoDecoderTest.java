@@ -17,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,8 +27,6 @@ class FeignKakaoDecoderTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private static final String TEST_URL = "TEST_URL";
-    private static final String TEST_METHOD_KEY = "TEST_METHOD_KEY";
-    private static final String TEST_ERROR_MESSAGE = "TEST_ERROR_MESSAGE";
     private static final String TEST_TITLE = "TEST_TITLE";
     private static final String TEST_CONTENTS = "TEST_CONTENTS";
     private static final String TEST_BLOGNAME = "TEST_BLOGNAME";
@@ -39,8 +36,6 @@ class FeignKakaoDecoderTest {
     private static final Integer TEST_TOTAL_COUNT = 10;
     private static final Integer TEST_PAGEABLE_COUNT = 1;
     private static final Boolean TEST_IS_END = false;
-
-
 
     @InjectMocks
     private FeignKakaoDecoder feignKakaoDecoder;
@@ -89,8 +84,8 @@ class FeignKakaoDecoderTest {
             }
 
             @Test
-            @DisplayName("ResponseDto Type 의 Object 를 던진다.")
-            void itReturnNoResponseFromServerException() throws IOException {
+            @DisplayName("response body data 를 ResponseDto Type 으로 파싱하여 리턴한다.")
+            void itReturnResponseBodyDataParsedResponseDtoType() throws IOException {
 
                 Object responseDto = feignKakaoDecoder.decode(response, GetSearchKakaoBlogResponseDto.class);
 
@@ -105,7 +100,6 @@ class FeignKakaoDecoderTest {
                 assertThat(response.getDocumentList().get(0).getTitle()).isEqualTo(TEST_TITLE);
                 assertThat(response.getDocumentList().get(0).getThumbNail()).isEqualTo(TEST_THUMBNAIL);
                 assertThat(response.getDocumentList().get(0).getUrl()).isEqualTo(TEST_URL);
-
             }
         }
     }

@@ -30,7 +30,7 @@ class FeignKakaoErrorDecoderTest {
     private FeignKakaoErrorDecoder feignKakaoErrorDecoder;
 
     @Nested
-    @DisplayName("FeignKakaoErrorDecoder decode 메소드는")
+    @DisplayName("FeignKakaoErrorDecoder 의 decode 메소드는")
     class DescribeDecodeInFeignKakaoErrorDecoder {
 
         Response response;
@@ -61,7 +61,7 @@ class FeignKakaoErrorDecoderTest {
         }
 
         @Nested
-        @DisplayName("서버에서 500에러를 뱉으면")
+        @DisplayName("서버에서 400에러를 뱉으면")
         class ContextWith400Error {
 
             @BeforeEach
