@@ -66,6 +66,7 @@ class FeignKakaoErrorDecoderTest {
 
             @BeforeEach
             void setup() {
+
                 response = Response.builder()
                         .status(HttpStatus.BAD_REQUEST.value())
                         .body("{\"message\":\""+ TEST_ERROR_MESSAGE +"\"}", StandardCharsets.UTF_8)

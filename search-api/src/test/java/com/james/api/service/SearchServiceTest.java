@@ -3,10 +3,8 @@ package com.james.api.service;
 import com.james.api.enumeration.SortEnum;
 import com.james.api.feign.SearchKakaoFeignClient;
 import com.james.api.feign.dto.response.GetSearchKakaoBlogResponseDto;
-import com.james.core.entity.History;
 import com.james.core.entity.Search;
 import com.james.core.exception.NotFoundSearchException;
-import com.james.core.repository.HistoryRepository;
 import com.james.core.repository.SearchRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -52,7 +50,6 @@ class SearchServiceTest {
         private static final Long TEST_ID = 3L;
         private static final Long TEST_CALL_COUNT = 30L;
 
-
         @InjectMocks
         private SearchService searchService;
 
@@ -61,9 +58,6 @@ class SearchServiceTest {
 
         @Mock
         private SearchRepository searchRepository;
-
-        @Mock
-        private HistoryRepository historyRepository;
 
         @BeforeEach
         void setup() {
@@ -145,7 +139,7 @@ class SearchServiceTest {
             }
 
             @Test
-            @DisplayName("History 객체와 새로운 Search 객체를 저장한다.")
+            @DisplayName("새로운 Search 객체를 저장한다.")
             void itSaveHistoryAndNewSearch() {
 
                 searchService.getBlogList(TEST_NORMAL_KEYWORD, TEST_SORT, TEST_NORMAL_PAGE, TEST_NORMAL_SIZE);
@@ -158,13 +152,6 @@ class SearchServiceTest {
                 assertThat(capturedSearch.getId()).as("전달받은 search 객체의 id 확인").isNull();
                 assertThat(capturedSearch.getKeyword()).as("전달받은 search 객체의 keyword 확인").isEqualTo(TEST_NORMAL_KEYWORD);
                 assertThat(capturedSearch.getCallCount()).as("전달받은 search 객체의 callCount 확인").isEqualTo(1);
-
-                ArgumentCaptor<History> historyCaptor = ArgumentCaptor.forClass(History.class);
-                verify(historyRepository, times(1)).save(historyCaptor.capture());
-                History capturedHistory = historyCaptor.getValue();
-
-                assertThat(capturedHistory.getSearch()).as("전달받은 history 객체의 search 확인").isEqualTo(savedSearch);
-
             }
         }
 
@@ -182,29 +169,19 @@ class SearchServiceTest {
                 search.setCallCount(TEST_CALL_COUNT);
 
                 when(searchRepository.findByKeyword(TEST_NORMAL_KEYWORD)).thenReturn(Optional.of(search));
-                when(historyRepository.countBySearch(search)).thenReturn(TEST_CALL_COUNT);
             }
 
             @Test
-            @DisplayName("History 객체를 저장하고, Search 객체를 업데이트 한다.")
+            @DisplayName("Search 객체를 업데이트 한다.")
             void itSaveHistoryAndUpdateSearch() {
 
                 searchService.getBlogList(TEST_NORMAL_KEYWORD, TEST_SORT, TEST_NORMAL_PAGE, TEST_NORMAL_SIZE);
 
-                ArgumentCaptor<Search> searchCaptor = ArgumentCaptor.forClass(Search.class);
-                verify(searchRepository, times(1)).save(searchCaptor.capture());
-                Search capturedSearch = searchCaptor.getValue();
+                ArgumentCaptor<Long> idCaptor = ArgumentCaptor.forClass(Long.class);
+                verify(searchRepository, times(1)).increaseCallCount(idCaptor.capture());
+                Long capturedId = idCaptor.getValue();
 
-                assertThat(capturedSearch.getId()).as("전달받은 search 객체의 id 확인").isEqualTo(TEST_ID);
-                assertThat(capturedSearch.getKeyword()).as("전달받은 search 객체의 keyword 확인").isEqualTo(TEST_NORMAL_KEYWORD);
-                assertThat(capturedSearch.getCallCount()).as("전달받은 search 객체의 callCount 확인").isEqualTo(TEST_CALL_COUNT);
-
-                ArgumentCaptor<History> historyCaptor = ArgumentCaptor.forClass(History.class);
-                verify(historyRepository, times(1)).save(historyCaptor.capture());
-                History capturedHistory = historyCaptor.getValue();
-
-                assertThat(capturedHistory.getSearch()).as("전달받은 history 객체의 search 확인").isEqualTo(search);
-
+                assertThat(capturedId).as("업데이트 하는 search 객체의 id 확인").isEqualTo(TEST_ID);
             }
         }
     }
