@@ -56,25 +56,29 @@ public class SearchService {
     }
 
     private void saveHistory(String keyword) {
-        try {
-            Search search = searchRepository.findByKeyword(keyword).orElseThrow(NotFoundSearchException::new);
-            History history = new History();
-            history.setSearch(search);
-            historyRepository.save(history);
 
+        Search search;
+        boolean isNewKeyword = false;
+
+        try {
+            search = searchRepository.findByKeyword(keyword).orElseThrow(NotFoundSearchException::new);
+        } catch (NotFoundSearchException notFoundSearchException) {
+            isNewKeyword = true;
+            search = new Search(keyword);
+        }
+
+        if (isNewKeyword) {
+            search = searchRepository.save(search);
+        }
+
+        History history = new History();
+        history.setSearch(search);
+        historyRepository.save(history);
+
+        if (!isNewKeyword) {
             Long callCount = historyRepository.countBySearch(search);
             search.setCallCount(callCount);
             searchRepository.save(search);
-
-        } catch (NotFoundSearchException notFoundSearchException) {
-            Search search = new Search();
-            search.setKeyword(keyword);
-            search.setCallCount(1L);
-            search = searchRepository.save(search);
-
-            History history = new History();
-            history.setSearch(search);
-            historyRepository.save(history);
         }
     }
 }

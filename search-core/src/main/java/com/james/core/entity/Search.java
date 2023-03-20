@@ -12,7 +12,6 @@ import javax.persistence.Id;
 @Entity
 @ToString
 @NoArgsConstructor
-@AllArgsConstructor
 public class Search extends BaseEntity{
 
     @Id
@@ -25,4 +24,9 @@ public class Search extends BaseEntity{
 
     /* 검색횟수 */
     private Long callCount;
+
+    public Search(String keyword) {
+        this.keyword = keyword;
+        this.callCount = 1L;
+    }
 }
