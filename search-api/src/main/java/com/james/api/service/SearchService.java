@@ -1,5 +1,6 @@
 package com.james.api.service;
 
+import com.james.api.dto.GetPopularKeywordListResponseDto;
 import com.james.api.dto.GetSearchBlogResponseDto;
 import com.james.api.enumeration.SortEnum;
 import com.james.api.feign.SearchKakaoFeignClient;
@@ -62,5 +63,21 @@ public class SearchService {
             search = new Search(keyword);
             searchRepository.save(search);
         }
+    }
+
+    public List<GetPopularKeywordListResponseDto> getPopularKeywordList() {
+
+        List<GetPopularKeywordListResponseDto> result = new ArrayList<>();
+        List<Search> searchList = searchRepository.findTop10ByOrderByCallCountDesc();
+
+        int index = 1;
+        for (Search search : searchList) {
+            GetPopularKeywordListResponseDto tmpResponseDto = new GetPopularKeywordListResponseDto();
+            BeanUtils.copyProperties(search, tmpResponseDto);
+            tmpResponseDto.setIndex(index++);
+            result.add(tmpResponseDto);
+        }
+
+        return result;
     }
 }

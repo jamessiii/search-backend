@@ -35,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class SearchControllerTest {
 
     private static final String URL_GET_BLOG_LIST = "/v1/search/blog";
+    private static final String URL_GET_POPULAR_KEYWORD_LIST = "/v1/search/pop-keyword";
     private static final String TEST_NORMAL_KEYWORD = "TEST_NORMAL_KEYWORD";
     private static final SortEnum TEST_NORMAL_SORT = SortEnum.ACCURACY;
     private static final Integer TEST_NORMAL_PAGE = 1;
@@ -46,7 +47,7 @@ class SearchControllerTest {
     private static final String TEST_TITLE = "TEST_TITLE";
     private static final String TEST_URL = "TEST_URL";
     private static final String TEST_THUMB_NAIL = "TEST_THUMBNAIL";
-    private static final LocalDateTime TEST_DATE_TIME = LocalDateTime.of(2023,3,20,15,30,30);
+    private static final LocalDateTime TEST_DATE_TIME = LocalDateTime.of(2023, 3, 20, 15, 30, 30);
 
     @Autowired
     private MockMvc mockMvc;
@@ -161,6 +162,27 @@ class SearchControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
                         .andExpect(status().isBadRequest());
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("GET /v1/search/pop-keyword API는")
+    class DescribeGetPopularKeywordList {
+        @Nested
+        @DisplayName("호출이 되면")
+        class ContextWithCall {
+
+            @Test
+            @DisplayName("searchService.getPopularKeywordList 을 호출한다.")
+            void itReturnBadRequestException() throws Exception {
+
+                mockMvc.perform(get(URL_GET_POPULAR_KEYWORD_LIST)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isOk());
+
+                verify(searchService, times(1)).getPopularKeywordList();
             }
         }
     }

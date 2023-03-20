@@ -1,5 +1,6 @@
 package com.james.api.service;
 
+import com.james.api.dto.GetPopularKeywordListResponseDto;
 import com.james.api.enumeration.SortEnum;
 import com.james.api.feign.SearchKakaoFeignClient;
 import com.james.api.feign.dto.response.GetSearchKakaoBlogResponseDto;
@@ -28,36 +29,36 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class SearchServiceTest {
 
+    private static final String TEST_NORMAL_KEYWORD = "TEST_NORMAL_KEYWORD";
+    private static final SortEnum TEST_SORT = SortEnum.ACCURACY;
+    private static final Integer TEST_NORMAL_PAGE = 1;
+    private static final Integer TEST_NORMAL_SIZE = 10;
+
+    private static final String TEST_BLOG_NAME = "TEST_BLOG_NAME";
+    private static final String TEST_CONTENTS = "TEST_CONTENTS";
+    private static final String TEST_TITLE = "TEST_TITLE";
+    private static final String TEST_URL = "TEST_URL";
+    private static final String TEST_THUMB_NAIL = "TEST_THUMBNAIL";
+    private static final LocalDateTime TEST_DATE_TIME = LocalDateTime.of(2023,3,20,15,30,30);
+    private static final Boolean TEST_IS_END = false;
+    private static final Integer TEST_PAGEABLE_COUNT = 1;
+    private static final Integer TEST_TOTAL_COUNT = 10;
+
+    private static final Long TEST_ID = 3L;
+    private static final Long TEST_CALL_COUNT = 30L;
+
+    @InjectMocks
+    private SearchService searchService;
+
+    @Mock
+    private SearchKakaoFeignClient searchKakaoFeignClient;
+
+    @Mock
+    private SearchRepository searchRepository;
+
     @Nested
     @DisplayName("getBlogList 메소드는")
     class DescribeGetBlogList {
-
-        private static final String TEST_NORMAL_KEYWORD = "TEST_NORMAL_KEYWORD";
-        private static final SortEnum TEST_SORT = SortEnum.ACCURACY;
-        private static final Integer TEST_NORMAL_PAGE = 1;
-        private static final Integer TEST_NORMAL_SIZE = 10;
-
-        private static final String TEST_BLOG_NAME = "TEST_BLOG_NAME";
-        private static final String TEST_CONTENTS = "TEST_CONTENTS";
-        private static final String TEST_TITLE = "TEST_TITLE";
-        private static final String TEST_URL = "TEST_URL";
-        private static final String TEST_THUMB_NAIL = "TEST_THUMBNAIL";
-        private static final LocalDateTime TEST_DATE_TIME = LocalDateTime.of(2023,3,20,15,30,30);
-        private static final Boolean TEST_IS_END = false;
-        private static final Integer TEST_PAGEABLE_COUNT = 1;
-        private static final Integer TEST_TOTAL_COUNT = 10;
-
-        private static final Long TEST_ID = 3L;
-        private static final Long TEST_CALL_COUNT = 30L;
-
-        @InjectMocks
-        private SearchService searchService;
-
-        @Mock
-        private SearchKakaoFeignClient searchKakaoFeignClient;
-
-        @Mock
-        private SearchRepository searchRepository;
 
         @BeforeEach
         void setup() {
@@ -182,6 +183,38 @@ class SearchServiceTest {
                 Long capturedId = idCaptor.getValue();
 
                 assertThat(capturedId).as("업데이트 하는 search 객체의 id 확인").isEqualTo(TEST_ID);
+            }
+        }
+    }
+
+
+    @Nested
+    @DisplayName("getPopularKeywordList 메소드는")
+    class DescribeGetPopularKeywordList {
+
+        @Nested
+        @DisplayName("호출하면")
+        class ContextWithOldKeyword {
+
+            @BeforeEach
+            void setup() {
+
+                Search search = new Search(TEST_NORMAL_KEYWORD);
+                List<Search> searchList = new ArrayList<>();
+                searchList.add(search);
+
+                when(searchRepository.findTop10ByOrderByCallCountDesc()).thenReturn(searchList);
+            }
+
+            @Test
+            @DisplayName("List<GetPopularKeywordListResponseDto> 를 리턴한다.")
+            void itSaveHistoryAndUpdateSearch() {
+
+                List<GetPopularKeywordListResponseDto> searchList = searchService.getPopularKeywordList();
+
+                verify(searchRepository, times(1)).findTop10ByOrderByCallCountDesc();
+
+                assertThat(searchList.get(0).getKeyword()).isEqualTo(TEST_NORMAL_KEYWORD);
             }
         }
     }
