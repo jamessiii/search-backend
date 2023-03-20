@@ -37,21 +37,20 @@ public class SearchService {
         saveHistory(keyword);
 
         String authorization = "KakaoAK " + apiKey;
-        GetSearchKakaoBlogResponseDto responseFromKakao;
+        GetSearchKakaoBlogResponseDto responseFromKakao = new GetSearchKakaoBlogResponseDto();
         List<GetSearchBlogResponseDto> documentList = new ArrayList<>();
 
         try {
             responseFromKakao = searchKakaoFeignClient.getBlogList(authorization, keyword, sort, page, size);
-            documentList = new ArrayList<>();
-            for (GetSearchKakaoBlogResponseDto.Document data : responseFromKakao.getDocumentList()) {
-                GetSearchBlogResponseDto tmpDocument = new GetSearchBlogResponseDto();
-                BeanUtils.copyProperties(data, tmpDocument);
-                documentList.add(tmpDocument);
-            }
+
         } catch (NoResponseFromServerException noResponseFromServerException) {
             // 네이버 요청
         }
-
+        for (GetSearchKakaoBlogResponseDto.Document data : responseFromKakao.getDocumentList()) {
+            GetSearchBlogResponseDto tmpDocument = new GetSearchBlogResponseDto();
+            BeanUtils.copyProperties(data, tmpDocument);
+            documentList.add(tmpDocument);
+        }
         return new PageImpl<>(documentList, PageRequest.of(page, size), documentList.size());
     }
 
