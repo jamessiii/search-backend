@@ -1,6 +1,5 @@
 package com.james.api.feign;
 
-import com.james.api.enumeration.SortEnum;
 import com.james.api.feign.configuration.SearchKakaoConfig;
 import com.james.api.feign.dto.response.GetSearchKakaoBlogResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;

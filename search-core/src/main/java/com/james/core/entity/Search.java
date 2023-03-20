@@ -10,7 +10,6 @@ import javax.persistence.Id;
 @Getter
 @Setter
 @Entity
-@ToString
 @NoArgsConstructor
 public class Search extends BaseEntity{
 
