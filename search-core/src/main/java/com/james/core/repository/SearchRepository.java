@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface SearchRepository extends JpaRepository<Search, String> {
 
-    Optional<Search> findById(long id);
+    Optional<Search> findByKeyword(String keyword);
 }
