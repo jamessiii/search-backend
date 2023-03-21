@@ -3,10 +3,14 @@ package com.james.api.service;
 import com.james.api.dto.GetPopularKeywordListResponseDto;
 import com.james.api.enumeration.SortEnum;
 import com.james.api.feign.SearchKakaoFeignClient;
+import com.james.api.feign.SearchNaverFeignClient;
 import com.james.api.feign.dto.response.GetSearchKakaoBlogResponseDto;
+import com.james.api.feign.dto.response.GetSearchNaverBlogResponseDto;
 import com.james.core.entity.Search;
-import com.james.core.exception.NotFoundSearchException;
+import com.james.core.exception.NaverApiPageIsTooLargeException;
+import com.james.core.exception.NoResponseFromServerException;
 import com.james.core.repository.SearchRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -20,9 +24,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -32,6 +36,7 @@ class SearchServiceTest {
     private static final String TEST_NORMAL_KEYWORD = "TEST_NORMAL_KEYWORD";
     private static final SortEnum TEST_SORT = SortEnum.ACCURACY;
     private static final Integer TEST_NORMAL_PAGE = 1;
+    private static final Integer TEST_ABNORMAL_PAGE = 99999999;
     private static final Integer TEST_NORMAL_SIZE = 10;
 
     private static final String TEST_BLOG_NAME = "TEST_BLOG_NAME";
@@ -54,38 +59,14 @@ class SearchServiceTest {
     private SearchKakaoFeignClient searchKakaoFeignClient;
 
     @Mock
+    private SearchNaverFeignClient searchNaverFeignClient;
+
+    @Mock
     private SearchRepository searchRepository;
 
     @Nested
     @DisplayName("getBlogList 메소드는")
     class DescribeGetBlogList {
-
-        @BeforeEach
-        void setup() {
-
-            List<GetSearchKakaoBlogResponseDto.Document> documentList = new ArrayList<>();
-            GetSearchKakaoBlogResponseDto.Document document = new GetSearchKakaoBlogResponseDto.Document();
-            document.setBlogName(TEST_BLOG_NAME);
-            document.setContents(TEST_CONTENTS);
-            document.setTitle(TEST_TITLE);
-            document.setUrl(TEST_URL);
-            document.setThumbNail(TEST_THUMB_NAIL);
-            document.setDateTime(TEST_DATE_TIME);
-            documentList.add(document);
-
-            GetSearchKakaoBlogResponseDto.Meta meta = new GetSearchKakaoBlogResponseDto.Meta();
-            meta.setIsEnd(TEST_IS_END);
-            meta.setPageableCount(TEST_PAGEABLE_COUNT);
-            meta.setTotalCount(TEST_TOTAL_COUNT);
-
-            GetSearchKakaoBlogResponseDto responseFromKakao = new GetSearchKakaoBlogResponseDto();
-            responseFromKakao.setDocumentList(documentList);
-            responseFromKakao.setMeta(meta);
-
-            when(searchKakaoFeignClient
-                    .getBlogList(any(), eq(TEST_NORMAL_KEYWORD), eq(TEST_SORT.getCode()), eq(TEST_NORMAL_PAGE), eq(TEST_NORMAL_SIZE)))
-                    .thenReturn(responseFromKakao);
-        }
 
         @Nested
         @DisplayName("정상적인 파라미터로 호출하면")
@@ -93,7 +74,30 @@ class SearchServiceTest {
 
             @BeforeEach
             void setup() {
-                when(searchRepository.findByKeyword(TEST_NORMAL_KEYWORD)).thenThrow(new NotFoundSearchException());
+
+                List<GetSearchKakaoBlogResponseDto.Document> documentList = new ArrayList<>();
+                GetSearchKakaoBlogResponseDto.Document document = new GetSearchKakaoBlogResponseDto.Document();
+                document.setBlogName(TEST_BLOG_NAME);
+                document.setContents(TEST_CONTENTS);
+                document.setTitle(TEST_TITLE);
+                document.setUrl(TEST_URL);
+                document.setThumbNail(TEST_THUMB_NAIL);
+                document.setDateTime(TEST_DATE_TIME);
+                documentList.add(document);
+
+                GetSearchKakaoBlogResponseDto.Meta meta = new GetSearchKakaoBlogResponseDto.Meta();
+                meta.setIsEnd(TEST_IS_END);
+                meta.setPageableCount(TEST_PAGEABLE_COUNT);
+                meta.setTotalCount(TEST_TOTAL_COUNT);
+
+                GetSearchKakaoBlogResponseDto responseFromKakao = new GetSearchKakaoBlogResponseDto();
+                responseFromKakao.setDocumentList(documentList);
+                responseFromKakao.setMeta(meta);
+
+                when(searchKakaoFeignClient.getBlogList(any(), eq(TEST_NORMAL_KEYWORD), eq(TEST_SORT.getCodeKakao()), eq(TEST_NORMAL_PAGE), eq(TEST_NORMAL_SIZE)))
+                        .thenReturn(responseFromKakao);
+                when(searchRepository.findByKeyword(TEST_NORMAL_KEYWORD))
+                        .thenReturn(null);
             }
 
             @Test
@@ -115,7 +119,7 @@ class SearchServiceTest {
                 Integer capturedSize = sizeCaptor.getValue();
 
                 assertThat(capturedKeyword).as("전달받은 keyword 확인").isEqualTo(TEST_NORMAL_KEYWORD);
-                assertThat(capturedSort).as("전달받은 sort 확인").isEqualTo(TEST_SORT.getCode());
+                assertThat(capturedSort).as("전달받은 sort 확인").isEqualTo(TEST_SORT.getCodeKakao());
                 assertThat(capturedPage).as("전달받은 page 확인").isEqualTo(TEST_NORMAL_PAGE);
                 assertThat(capturedSize).as("전달받은 size 확인").isEqualTo(TEST_NORMAL_SIZE);
 
@@ -131,12 +135,36 @@ class SearchServiceTest {
             @BeforeEach
             void setup() {
 
+                List<GetSearchKakaoBlogResponseDto.Document> documentList = new ArrayList<>();
+                GetSearchKakaoBlogResponseDto.Document document = new GetSearchKakaoBlogResponseDto.Document();
+                document.setBlogName(TEST_BLOG_NAME);
+                document.setContents(TEST_CONTENTS);
+                document.setTitle(TEST_TITLE);
+                document.setUrl(TEST_URL);
+                document.setThumbNail(TEST_THUMB_NAIL);
+                document.setDateTime(TEST_DATE_TIME);
+                documentList.add(document);
+
+                GetSearchKakaoBlogResponseDto.Meta meta = new GetSearchKakaoBlogResponseDto.Meta();
+                meta.setIsEnd(TEST_IS_END);
+                meta.setPageableCount(TEST_PAGEABLE_COUNT);
+                meta.setTotalCount(TEST_TOTAL_COUNT);
+
+                GetSearchKakaoBlogResponseDto responseFromKakao = new GetSearchKakaoBlogResponseDto();
+                responseFromKakao.setDocumentList(documentList);
+                responseFromKakao.setMeta(meta);
+
+                when(searchKakaoFeignClient.getBlogList(any(), eq(TEST_NORMAL_KEYWORD), eq(TEST_SORT.getCodeKakao()), eq(TEST_NORMAL_PAGE), eq(TEST_NORMAL_SIZE)))
+                        .thenReturn(responseFromKakao);
+
                 savedSearch.setId(TEST_ID);
                 savedSearch.setKeyword(TEST_NORMAL_KEYWORD);
                 savedSearch.setCallCount(TEST_CALL_COUNT);
 
-                when(searchRepository.findByKeyword(TEST_NORMAL_KEYWORD)).thenThrow(new NotFoundSearchException());
-                when(searchRepository.save(any())).thenReturn(savedSearch);
+                when(searchRepository.findByKeyword(TEST_NORMAL_KEYWORD))
+                        .thenReturn(null);
+                when(searchRepository.save(any()))
+                        .thenReturn(savedSearch);
             }
 
             @Test
@@ -165,11 +193,34 @@ class SearchServiceTest {
             @BeforeEach
             void setup() {
 
+                List<GetSearchKakaoBlogResponseDto.Document> documentList = new ArrayList<>();
+                GetSearchKakaoBlogResponseDto.Document document = new GetSearchKakaoBlogResponseDto.Document();
+                document.setBlogName(TEST_BLOG_NAME);
+                document.setContents(TEST_CONTENTS);
+                document.setTitle(TEST_TITLE);
+                document.setUrl(TEST_URL);
+                document.setThumbNail(TEST_THUMB_NAIL);
+                document.setDateTime(TEST_DATE_TIME);
+                documentList.add(document);
+
+                GetSearchKakaoBlogResponseDto.Meta meta = new GetSearchKakaoBlogResponseDto.Meta();
+                meta.setIsEnd(TEST_IS_END);
+                meta.setPageableCount(TEST_PAGEABLE_COUNT);
+                meta.setTotalCount(TEST_TOTAL_COUNT);
+
+                GetSearchKakaoBlogResponseDto responseFromKakao = new GetSearchKakaoBlogResponseDto();
+                responseFromKakao.setDocumentList(documentList);
+                responseFromKakao.setMeta(meta);
+
+                when(searchKakaoFeignClient.getBlogList(any(), eq(TEST_NORMAL_KEYWORD), eq(TEST_SORT.getCodeKakao()), eq(TEST_NORMAL_PAGE), eq(TEST_NORMAL_SIZE)))
+                        .thenReturn(responseFromKakao);
+
                 search.setId(TEST_ID);
                 search.setKeyword(TEST_NORMAL_KEYWORD);
                 search.setCallCount(TEST_CALL_COUNT);
 
-                when(searchRepository.findByKeyword(TEST_NORMAL_KEYWORD)).thenReturn(Optional.of(search));
+                when(searchRepository.findByKeyword(TEST_NORMAL_KEYWORD))
+                        .thenReturn(search);
             }
 
             @Test
@@ -185,8 +236,96 @@ class SearchServiceTest {
                 assertThat(capturedId).as("업데이트 하는 search 객체의 id 확인").isEqualTo(TEST_ID);
             }
         }
-    }
 
+        @Nested
+        @DisplayName("Kakao API Server 가 500Error 를 리턴한 경우")
+        class ContextWithKakaoApiServerReturned500Error {
+
+            @BeforeEach
+            void setup() {
+
+                List<GetSearchNaverBlogResponseDto.Document> documentList = new ArrayList<>();
+                GetSearchNaverBlogResponseDto.Document document = new GetSearchNaverBlogResponseDto.Document();
+                document.setBlogName(TEST_BLOG_NAME);
+                document.setContents(TEST_CONTENTS);
+                document.setTitle(TEST_TITLE);
+                document.setUrl(TEST_URL);
+                document.setDateTime(TEST_DATE_TIME);
+                documentList.add(document);
+
+                GetSearchNaverBlogResponseDto responseFromNaver = new GetSearchNaverBlogResponseDto();
+                responseFromNaver.setDocumentList(documentList);
+                responseFromNaver.setTotalCount(TEST_TOTAL_COUNT);
+
+                when(searchRepository.findByKeyword(TEST_NORMAL_KEYWORD))
+                        .thenReturn(null);
+                when(searchKakaoFeignClient.getBlogList(any(), any(), any(), any(), any()))
+                        .thenThrow(new NoResponseFromServerException());
+                when(searchNaverFeignClient.getBlogList(any(), any(), eq(TEST_NORMAL_KEYWORD), eq(TEST_SORT.getCodeNaver()), eq(TEST_NORMAL_PAGE), eq(TEST_NORMAL_SIZE)))
+                        .thenReturn(responseFromNaver);
+            }
+
+            @Test
+            @DisplayName("Naver API Server를 이용하여 조회한다.")
+            void itGiveToGetBLogListFromRequest() {
+
+                searchService.getBlogList(TEST_NORMAL_KEYWORD, TEST_SORT, TEST_NORMAL_PAGE, TEST_NORMAL_SIZE);
+
+                ArgumentCaptor<String> keywordCaptor = ArgumentCaptor.forClass(String.class);
+                ArgumentCaptor<String> sortCaptor = ArgumentCaptor.forClass(String.class);
+                ArgumentCaptor<Integer> pageCaptor = ArgumentCaptor.forClass(Integer.class);
+                ArgumentCaptor<Integer> sizeCaptor = ArgumentCaptor.forClass(Integer.class);
+                verify(searchNaverFeignClient, times(1)).getBlogList
+                        (any(), any(), keywordCaptor.capture(), sortCaptor.capture(), pageCaptor.capture(), sizeCaptor.capture());
+
+                String capturedKeyword = keywordCaptor.getValue();
+                String capturedSort = sortCaptor.getValue();
+                Integer capturedPage = pageCaptor.getValue();
+                Integer capturedSize = sizeCaptor.getValue();
+
+                assertThat(capturedKeyword).as("전달받은 keyword 확인").isEqualTo(TEST_NORMAL_KEYWORD);
+                assertThat(capturedSort).as("전달받은 sort 확인").isEqualTo(TEST_SORT.getCodeNaver());
+                assertThat(capturedPage).as("전달받은 page 확인").isEqualTo(TEST_NORMAL_PAGE);
+                assertThat(capturedSize).as("전달받은 size 확인").isEqualTo(TEST_NORMAL_SIZE);
+
+            }
+        }
+
+        @Nested
+        @DisplayName("Kakao API Server 가 500Error 를 리턴하였고, page 가 100 을 초과하는 경우")
+        class ContextWithKakaoApiServerReturned500ErrorAndPageOver100 {
+
+            @BeforeEach
+            void setup() {
+
+                List<GetSearchNaverBlogResponseDto.Document> documentList = new ArrayList<>();
+                GetSearchNaverBlogResponseDto.Document document = new GetSearchNaverBlogResponseDto.Document();
+                document.setBlogName(TEST_BLOG_NAME);
+                document.setContents(TEST_CONTENTS);
+                document.setTitle(TEST_TITLE);
+                document.setUrl(TEST_URL);
+                document.setDateTime(TEST_DATE_TIME);
+                documentList.add(document);
+
+                GetSearchNaverBlogResponseDto responseFromNaver = new GetSearchNaverBlogResponseDto();
+                responseFromNaver.setDocumentList(documentList);
+                responseFromNaver.setTotalCount(TEST_TOTAL_COUNT);
+
+                when(searchRepository.findByKeyword(TEST_NORMAL_KEYWORD)).thenReturn(null);
+                when(searchKakaoFeignClient.getBlogList(any(), any(), any(), any(), any()))
+                        .thenThrow(new NoResponseFromServerException());
+            }
+
+            @Test
+            @DisplayName("Naver API Server를 이용하여 조회한다.")
+            void itGiveToGetBLogListFromRequest() {
+
+                Assertions.assertThatThrownBy(() -> searchService.getBlogList(TEST_NORMAL_KEYWORD, TEST_SORT, TEST_ABNORMAL_PAGE, TEST_NORMAL_SIZE))
+                        .isInstanceOf(NaverApiPageIsTooLargeException.class);
+
+            }
+        }
+    }
 
     @Nested
     @DisplayName("getPopularKeywordList 메소드는")

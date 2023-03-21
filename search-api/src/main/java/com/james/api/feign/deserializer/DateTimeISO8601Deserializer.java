@@ -5,17 +5,15 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
 import java.io.IOException;
-import java.time.LocalDate;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
-public class DateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
+public class DateTimeISO8601Deserializer extends JsonDeserializer<LocalDateTime> {
 
     @Override
     public LocalDateTime deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        LocalDate date = LocalDate.parse(p.getText(), formatter);
-        return LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 0,0,0);
+        return LocalDateTime.from(Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(p.getText())).atZone(ZoneId.of("Asia/Seoul")));
     }
 }

@@ -79,7 +79,8 @@ class SearchControllerTest {
                 Page<GetSearchBlogResponseDto> result = new PageImpl<>(responseDtoList, PageRequest.of(TEST_NORMAL_PAGE, TEST_NORMAL_SIZE), responseDtoList.size());
 
                 // Mock 객체 행동 지정
-                when(searchService.getBlogList(TEST_NORMAL_KEYWORD, TEST_NORMAL_SORT, TEST_NORMAL_PAGE, TEST_NORMAL_SIZE)).thenReturn(result);
+                when(searchService.getBlogList(TEST_NORMAL_KEYWORD, TEST_NORMAL_SORT, TEST_NORMAL_PAGE, TEST_NORMAL_SIZE))
+                        .thenReturn(result);
 
             }
 
@@ -131,7 +132,8 @@ class SearchControllerTest {
             @BeforeEach
             void setup() {
                 // Mock 객체 행동 지정
-                doThrow(new BadRequestException()).when(searchService).getBlogList(TEST_NORMAL_KEYWORD, TEST_NORMAL_SORT, TEST_ABNORMAL_PAGE, TEST_NORMAL_SIZE);
+                when(searchService.getBlogList(TEST_NORMAL_KEYWORD, TEST_NORMAL_SORT, TEST_ABNORMAL_PAGE, TEST_NORMAL_SIZE))
+                        .thenThrow(new BadRequestException());
             }
 
             @Test
