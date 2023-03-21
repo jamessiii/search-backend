@@ -4,8 +4,11 @@ import com.james.api.dto.GetPopularKeywordListResponseDto;
 import com.james.api.dto.GetSearchBlogResponseDto;
 import com.james.api.enumeration.SortEnum;
 import com.james.api.feign.SearchKakaoFeignClient;
+import com.james.api.feign.SearchNaverFeignClient;
 import com.james.api.feign.dto.response.GetSearchKakaoBlogResponseDto;
+import com.james.api.feign.dto.response.GetSearchNaverBlogResponseDto;
 import com.james.core.entity.Search;
+import com.james.core.exception.NaverApiPageIsTooLargeException;
 import com.james.core.exception.NoResponseFromServerException;
 import com.james.core.exception.NotFoundSearchException;
 import com.james.core.repository.SearchRepository;
@@ -28,29 +31,45 @@ public class SearchService {
     @Value("${kakao.api-key}")
     private String apiKey;
 
+    @Value("${naver.client-id}")
+    private String clientId;
+
+    @Value("${naver.client-secret}")
+    private String secret;
+
     private final SearchRepository searchRepository;
     private final SearchKakaoFeignClient searchKakaoFeignClient;
+    private final SearchNaverFeignClient searchNaverFeignClient;
 
     public Page<GetSearchBlogResponseDto> getBlogList(String keyword, SortEnum sort, Integer page, Integer size) {
 
         saveHistory(keyword);
 
         String authorization = "KakaoAK " + apiKey;
-        GetSearchKakaoBlogResponseDto responseFromKakao = new GetSearchKakaoBlogResponseDto();
         List<GetSearchBlogResponseDto> documentList = new ArrayList<>();
+        Integer totalCount;
 
         try {
-            responseFromKakao = searchKakaoFeignClient.getBlogList(authorization, keyword, sort.getCode(), page, size);
-
+            GetSearchKakaoBlogResponseDto responseFromKakao = searchKakaoFeignClient.getBlogList(authorization, keyword, sort.getCodeKakao(), page, size);
+            for (GetSearchKakaoBlogResponseDto.Document data : responseFromKakao.getDocumentList()) {
+                GetSearchBlogResponseDto tmpDocument = new GetSearchBlogResponseDto();
+                BeanUtils.copyProperties(data, tmpDocument);
+                documentList.add(tmpDocument);
+            }
+            totalCount = responseFromKakao.getMeta().getTotalCount();
         } catch (NoResponseFromServerException noResponseFromServerException) {
-            // 네이버 요청
+            if (page > 100) {
+                throw new NaverApiPageIsTooLargeException();
+            }
+
+            GetSearchNaverBlogResponseDto responseFromNaver = searchNaverFeignClient.getBlogList(clientId, secret, keyword, sort.getCodeNaver(), page, size);
+            for (GetSearchNaverBlogResponseDto.Document data : responseFromNaver.getDocumentList()) {
+                GetSearchBlogResponseDto tmpDocument = new GetSearchBlogResponseDto();
+                BeanUtils.copyProperties(data, tmpDocument);
+                documentList.add(tmpDocument);
+            }
+            totalCount = responseFromNaver.getTotalCount();
         }
-        for (GetSearchKakaoBlogResponseDto.Document data : responseFromKakao.getDocumentList()) {
-            GetSearchBlogResponseDto tmpDocument = new GetSearchBlogResponseDto();
-            BeanUtils.copyProperties(data, tmpDocument);
-            documentList.add(tmpDocument);
-        }
-        Integer totalCount = responseFromKakao.getMeta().getTotalCount();
         return new PageImpl<>(documentList, PageRequest.of(page, size), totalCount);
     }
 

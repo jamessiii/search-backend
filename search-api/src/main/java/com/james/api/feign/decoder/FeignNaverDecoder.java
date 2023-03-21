@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.james.api.feign.deserializer.DateTimeISO8601Deserializer;
+import com.james.api.feign.deserializer.DateTimeDeserializer;
 import feign.Response;
 import feign.codec.Decoder;
 
@@ -17,11 +17,11 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class FeignKakaoDecoder implements Decoder {
+public class FeignNaverDecoder implements Decoder {
 
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule())
             .registerModule(new SimpleModule()
-                    .addDeserializer(LocalDateTime.class, new DateTimeISO8601Deserializer()))
+                    .addDeserializer(LocalDateTime.class, new DateTimeDeserializer()))
             .configure(DeserializationFeature.READ_ENUMS_USING_TO_STRING, true);
 
     @Override

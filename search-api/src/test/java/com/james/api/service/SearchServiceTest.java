@@ -81,7 +81,7 @@ class SearchServiceTest {
             responseFromKakao.setMeta(meta);
 
             when(searchKakaoFeignClient
-                    .getBlogList(any(), eq(TEST_NORMAL_KEYWORD), eq(TEST_SORT.getCode()), eq(TEST_NORMAL_PAGE), eq(TEST_NORMAL_SIZE)))
+                    .getBlogList(any(), eq(TEST_NORMAL_KEYWORD), eq(TEST_SORT.getCodeKakao()), eq(TEST_NORMAL_PAGE), eq(TEST_NORMAL_SIZE)))
                     .thenReturn(responseFromKakao);
         }
 
@@ -113,7 +113,7 @@ class SearchServiceTest {
                 Integer capturedSize = sizeCaptor.getValue();
 
                 assertThat(capturedKeyword).as("전달받은 keyword 확인").isEqualTo(TEST_NORMAL_KEYWORD);
-                assertThat(capturedSort).as("전달받은 sort 확인").isEqualTo(TEST_SORT.getCode());
+                assertThat(capturedSort).as("전달받은 sort 확인").isEqualTo(TEST_SORT.getCodeKakao());
                 assertThat(capturedPage).as("전달받은 page 확인").isEqualTo(TEST_NORMAL_PAGE);
                 assertThat(capturedSize).as("전달받은 size 확인").isEqualTo(TEST_NORMAL_SIZE);
 

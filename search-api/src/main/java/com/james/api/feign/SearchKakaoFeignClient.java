@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(name = "BlogFeignClient", url = "https://dapi.kakao.com/", configuration = SearchKakaoConfig.class)
+@FeignClient(name = "SearchKakaoFeignClient", url = "https://dapi.kakao.com/", configuration = SearchKakaoConfig.class)
 public interface SearchKakaoFeignClient {
 
     @GetMapping(value = "/v2/search/blog?query={query}&sort={sort}&size={size}&page={page}")
