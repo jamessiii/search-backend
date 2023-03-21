@@ -17,5 +17,10 @@ public interface SearchRepository extends JpaRepository<Search, String> {
     @Query("update Search t1 set t1.callCount=t1.callCount+1 where t1.id=:id")
     void increaseCallCount(Long id);
 
+    @Modifying
+    @Transactional
+    @Query("update Search t1 set t1.callCount=t1.callCount-:count where t1.id=:id")
+    void decreaseCallCount(Long id, Long count);
+
     List<Search> findTop10ByOrderByCallCountDesc();
 }

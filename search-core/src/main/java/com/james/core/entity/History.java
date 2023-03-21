@@ -7,7 +7,6 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class History extends BaseEntity {
