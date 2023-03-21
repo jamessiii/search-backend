@@ -21,14 +21,6 @@ public class GetSearchNaverBlogResponseDto {
     @JsonAlias(value = "total")
     private Integer totalCount;
 
-    // 현재 페이지
-    @JsonAlias(value = "start")
-    private Integer page;
-
-    // 페이지에 보여지는 element 수
-    @JsonAlias(value = "display")
-    private Integer size;
-
     @Getter
     @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)

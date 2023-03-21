@@ -14,11 +14,6 @@ public class DateTimeISO8601Deserializer extends JsonDeserializer<LocalDateTime>
 
     @Override
     public LocalDateTime deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-
-        return LocalDateTime.from(
-                    Instant.from(
-                            DateTimeFormatter.ISO_DATE_TIME.parse(p.getText())
-                    ).atZone(ZoneId.of("Asia/Seoul"))
-            );
+        return LocalDateTime.from(Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(p.getText())).atZone(ZoneId.of("Asia/Seoul")));
     }
 }
