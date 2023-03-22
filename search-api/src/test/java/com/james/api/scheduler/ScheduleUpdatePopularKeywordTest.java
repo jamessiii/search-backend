@@ -59,7 +59,7 @@ class ScheduleUpdatePopularKeywordTest {
 
             @Test
             @DisplayName("해당 History 를 삭제하고 Search 를 업데이트 한다.")
-            void itDeleteHistoryAndUpdateSearch() {
+            void itDeleteExpiredHistoryAndUpdateSearch() {
 
                 scheduleUpdatePopularKeyword.deleteExpiredHistoryAndUpdateSearchCallCount();
 
