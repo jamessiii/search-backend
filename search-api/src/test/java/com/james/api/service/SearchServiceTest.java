@@ -6,9 +6,11 @@ import com.james.api.feign.SearchKakaoFeignClient;
 import com.james.api.feign.SearchNaverFeignClient;
 import com.james.api.feign.dto.response.GetSearchKakaoBlogResponseDto;
 import com.james.api.feign.dto.response.GetSearchNaverBlogResponseDto;
+import com.james.core.entity.History;
 import com.james.core.entity.Search;
 import com.james.core.exception.NaverApiPageIsTooLargeException;
 import com.james.core.exception.NoResponseFromServerException;
+import com.james.core.repository.HistoryRepository;
 import com.james.core.repository.SearchRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -60,6 +61,9 @@ class SearchServiceTest {
 
     @Mock
     private SearchNaverFeignClient searchNaverFeignClient;
+
+    @Mock
+    private HistoryRepository historyRepository;
 
     @Mock
     private SearchRepository searchRepository;
@@ -168,19 +172,22 @@ class SearchServiceTest {
             }
 
             @Test
-            @DisplayName("새로운 Search 객체를 저장한다.")
+            @DisplayName("History 객체와 새로운 Search 객체를 저장한다.")
             void itSaveHistoryAndNewSearch() {
 
                 searchService.getBlogList(TEST_NORMAL_KEYWORD, TEST_SORT, TEST_NORMAL_PAGE, TEST_NORMAL_SIZE);
 
                 ArgumentCaptor<Search> searchCaptor = ArgumentCaptor.forClass(Search.class);
-
                 verify(searchRepository, times(1)).save(searchCaptor.capture());
                 Search capturedSearch = searchCaptor.getValue();
-
                 assertThat(capturedSearch.getId()).as("전달받은 search 객체의 id 확인").isNull();
                 assertThat(capturedSearch.getKeyword()).as("전달받은 search 객체의 keyword 확인").isEqualTo(TEST_NORMAL_KEYWORD);
                 assertThat(capturedSearch.getCallCount()).as("전달받은 search 객체의 callCount 확인").isEqualTo(1);
+
+                ArgumentCaptor<History> historyCaptor = ArgumentCaptor.forClass(History.class);
+                verify(historyRepository, times(1)).save(historyCaptor.capture());
+                History capturedHistory = historyCaptor.getValue();
+                assertThat(capturedHistory.getSearch()).as("전달받은 history 객체의 search 확인").isEqualTo(savedSearch);
             }
         }
 
@@ -224,16 +231,20 @@ class SearchServiceTest {
             }
 
             @Test
-            @DisplayName("Search 객체를 업데이트 한다.")
-            void itSaveHistoryAndUpdateSearch() {
+            @DisplayName("Search 객체를 업데이트 하고 History 객체를 저장한다.")
+            void itUpdateSearchAndSaveHistory() {
 
                 searchService.getBlogList(TEST_NORMAL_KEYWORD, TEST_SORT, TEST_NORMAL_PAGE, TEST_NORMAL_SIZE);
 
                 ArgumentCaptor<Long> idCaptor = ArgumentCaptor.forClass(Long.class);
                 verify(searchRepository, times(1)).increaseCallCount(idCaptor.capture());
                 Long capturedId = idCaptor.getValue();
-
                 assertThat(capturedId).as("업데이트 하는 search 객체의 id 확인").isEqualTo(TEST_ID);
+
+                ArgumentCaptor<History> historyCaptor = ArgumentCaptor.forClass(History.class);
+                verify(historyRepository, times(1)).save(historyCaptor.capture());
+                History capturedHistory = historyCaptor.getValue();
+                assertThat(capturedHistory.getSearch()).as("전달받은 history 객체의 search 확인").isEqualTo(search);
             }
         }
 

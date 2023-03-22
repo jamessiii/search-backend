@@ -7,10 +7,12 @@ import com.james.api.feign.SearchKakaoFeignClient;
 import com.james.api.feign.SearchNaverFeignClient;
 import com.james.api.feign.dto.response.GetSearchKakaoBlogResponseDto;
 import com.james.api.feign.dto.response.GetSearchNaverBlogResponseDto;
+import com.james.core.entity.History;
 import com.james.core.entity.Search;
 import com.james.core.exception.NaverApiPageIsTooLargeException;
 import com.james.core.exception.NoResponseFromServerException;
 import com.james.core.exception.NotFoundSearchException;
+import com.james.core.repository.HistoryRepository;
 import com.james.core.repository.SearchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -38,12 +40,13 @@ public class SearchService {
     private String secret;
 
     private final SearchRepository searchRepository;
+    private final HistoryRepository historyRepository;
     private final SearchKakaoFeignClient searchKakaoFeignClient;
     private final SearchNaverFeignClient searchNaverFeignClient;
 
     public Page<GetSearchBlogResponseDto> getBlogList(String keyword, SortEnum sort, Integer page, Integer size) {
 
-        saveHistory(keyword);
+        saveHistory(InsertOrUpdateSearch(keyword));
 
         String authorization = "KakaoAK " + apiKey;
         List<GetSearchBlogResponseDto> documentList = new ArrayList<>();
@@ -73,24 +76,30 @@ public class SearchService {
         return new PageImpl<>(documentList, PageRequest.of(page, size), totalCount);
     }
 
-    private void saveHistory(String keyword) {
+    private Search InsertOrUpdateSearch(String keyword) {
 
         Search search = searchRepository.findByKeyword(keyword);
 
         if (search != null) {
             searchRepository.increaseCallCount(search.getId());
-            return;
+            return search;
         }
 
-        search = new Search(keyword);
         try {
-            searchRepository.save(search);
+            search = searchRepository.save(new Search(keyword));
         } catch (DataIntegrityViolationException dataIntegrityViolationException) {
             search = searchRepository.findByKeyword(keyword);
             if (search == null)
                 throw new NotFoundSearchException();
             searchRepository.increaseCallCount(search.getId());
         }
+        return search;
+    }
+
+    private void saveHistory(Search search){
+        History history = new History();
+        history.setSearch(search);
+        historyRepository.save(history);
     }
 
     public List<GetPopularKeywordListResponseDto> getPopularKeywordList() {
