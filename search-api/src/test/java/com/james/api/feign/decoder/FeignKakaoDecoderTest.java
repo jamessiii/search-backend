@@ -2,7 +2,7 @@ package com.james.api.feign.decoder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.james.api.feign.dto.response.GetSearchKakaoBlogResponseDto;
+import com.james.api.feign.dto.GetSearchKakaoBlogResponseDto;
 import feign.Request;
 import feign.Response;
 import org.junit.jupiter.api.BeforeEach;

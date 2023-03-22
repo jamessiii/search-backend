@@ -33,7 +33,6 @@ class HistoryEntityTest {
 
                 assertEquals(TEST_ID, history.getId());
                 assertEquals(TEST_SEARCH, history.getSearch());
-
             }
         }
     }

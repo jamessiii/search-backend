@@ -24,10 +24,14 @@ public class SearchController {
 
     private final SearchService searchService;
 
+
     /**
      * 블로그 검색 컨트롤러
-     *
-     * @param keyword 검색어
+     * @param keyword   검색어
+     * @param sort      정렬방법
+     * @param page      현재 페이지 번호
+     * @param size      한 페이지에 보일 목록 수
+     * @return          {@link ResponseDto<Page<GetSearchBlogResponseDto>>} 형태로 반환합니다.
      */
     @GetMapping(value = "/blog")
     public ResponseDto<Page<GetSearchBlogResponseDto>> getBlogList(
@@ -36,14 +40,17 @@ public class SearchController {
             @RequestParam(required = false, defaultValue = "ACCURACY") @Parameter(description = "정렬") SortEnum sort,
             @RequestParam(required = false, defaultValue = "1") @Parameter(description = "현재 페이지 번호") Integer page,
             @RequestParam(required = false, defaultValue = "10") @Parameter(description = "한 페이지에 보일 목록 수") Integer size) {
+
         return ResponseDto.success(searchService.getBlogList(keyword, sort, page, size));
     }
 
     /**
      * 인기 검색어 조회 컨트롤러
+     * @return {@link ResponseDto<List<GetPopularKeywordListResponseDto>>} 형태로 반환합니다.
      */
     @GetMapping(value = "/pop-keyword")
     public ResponseDto<List<GetPopularKeywordListResponseDto>> getPopularKeywordList() {
+
         return ResponseDto.success(searchService.getPopularKeywordList());
     }
 }

@@ -1,4 +1,4 @@
-package com.james.api.feign.dto.response;
+package com.james.api.feign.dto;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

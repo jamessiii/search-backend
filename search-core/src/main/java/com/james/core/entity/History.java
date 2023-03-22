@@ -20,4 +20,8 @@ public class History extends BaseEntity {
     @ToString.Exclude
     /* 검색 */
     private Search search;
+
+    public History(Search search) {
+        this.search = search;
+    }
 }

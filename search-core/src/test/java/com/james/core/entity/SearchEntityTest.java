@@ -26,7 +26,6 @@ class SearchEntityTest {
 
                 assertEquals(TEST_KEYWORD, search.getKeyword());
                 assertEquals(1, search.getCallCount());
-
             }
         }
     }
