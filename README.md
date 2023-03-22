@@ -15,4 +15,4 @@
 
 
 ### jar파일 다운로드 링크
-- https://drive.google.com/file/d/14BBXAb4mlp0NemwTkOY1RZ84qG_2LXao/view?usp=share_link
+- https://drive.google.com/file/d/1ExJSY_DvFqhr2lYz5NzqoQmhi2XvsL0i/view?usp=share_link
