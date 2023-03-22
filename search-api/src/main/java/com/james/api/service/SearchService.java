@@ -85,9 +85,8 @@ public class SearchService {
             return search;
         }
 
-        search = new Search(keyword);
         try {
-            search = searchRepository.save(search);
+            search = searchRepository.save(new Search(keyword));
         } catch (DataIntegrityViolationException dataIntegrityViolationException) {
             search = searchRepository.findByKeyword(keyword);
             if (search == null)
