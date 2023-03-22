@@ -55,6 +55,7 @@ class ScheduleUpdatePopularKeywordTest {
                 historyList.add(history);
 
                 when(historyRepository.findByCreatedAtBefore(any())).thenReturn(Optional.of(historyList));
+                when(searchRepository.findById(anyLong())).thenReturn(search);
             }
 
             @Test
@@ -81,6 +82,37 @@ class ScheduleUpdatePopularKeywordTest {
                 Long capturedDecreaseSize = decreaseSizeCaptor.getValue();
                 assertThat(capturedSearchId).isEqualTo(TEST_ID);
                 assertThat(capturedDecreaseSize).isEqualTo(1);
+            }
+        }
+
+        @Nested
+        @DisplayName("기간만료된 history 가 있어서 callCount 감소 후 callCount가 0인 경우")
+        class ContextWithExpiredHistoryListAndSearchCallCountIsZero{
+
+            @BeforeEach
+            void setup() {
+
+                Search search = new Search(TEST_NORMAL_KEYWORD);
+                search.setId(TEST_ID);
+
+                History history = new History(search);
+                List<History> historyList = new ArrayList<>();
+                historyList.add(history);
+                when(historyRepository.findByCreatedAtBefore(any())).thenReturn(Optional.of(historyList));
+
+                search.setCallCount(0L);
+                when(searchRepository.findById(anyLong())).thenReturn(search);
+            }
+
+            @Test
+            @DisplayName("Search 가 삭제된다.")
+            void itDeleteExpiredHistoryAndUpdateSearch() {
+
+                scheduleUpdatePopularKeyword.deleteExpiredHistoryAndUpdateSearchCallCount();
+
+                ArgumentCaptor<Search> searchCaptor = ArgumentCaptor.forClass(Search.class);
+                verify(searchRepository, times(1)).delete(searchCaptor.capture());
+
             }
         }
     }

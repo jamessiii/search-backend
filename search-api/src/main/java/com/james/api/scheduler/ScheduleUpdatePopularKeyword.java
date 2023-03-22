@@ -30,7 +30,7 @@ public class ScheduleUpdatePopularKeyword {
      * 삭제된 {@link History} 와의 릴레이션이 있는 {@link Search} 의 callCount 감소
      */
     @Scheduled(cron = "0 */5 * * * *")
-    @SchedulerLock(name = "testShedLockJob", lockAtLeastFor = "PT4M59S", lockAtMostFor = "PT4M59S")
+    @SchedulerLock(name = "testShedLockJob", lockAtLeastFor = "PT5S", lockAtMostFor = "PT5S")
     public void deleteExpiredHistoryAndUpdateSearchCallCount() {
         
         LocalDateTime expiredTime = LocalDateTime.now().minusMinutes(15L);
@@ -51,6 +51,10 @@ public class ScheduleUpdatePopularKeyword {
 
         for(Map.Entry<Long, Long> entry : historyCountToDeletePerSearchIdMap.entrySet()) {
             searchRepository.decreaseCallCount(entry.getKey(), entry.getValue());
+            Search search = searchRepository.findById(entry.getKey());
+            if (search.getCallCount() == 0) {
+                searchRepository.delete(search);
+            }
         }
     }
 }

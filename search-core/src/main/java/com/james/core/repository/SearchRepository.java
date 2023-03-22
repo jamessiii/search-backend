@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface SearchRepository extends JpaRepository<Search, String> {
 
+    Search findById(Long id);
     Search findByKeyword(String keyword);
 
     @Modifying
