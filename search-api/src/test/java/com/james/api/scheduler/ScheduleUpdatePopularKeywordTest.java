@@ -37,7 +37,6 @@ class ScheduleUpdatePopularKeywordTest {
     @DisplayName("deleteExpiredHistoryAndUpdateSearchCallCount 메소드는")
     class DescribeDeleteExpiredHistoryAndUpdateSearchCallCount {
 
-        private static final Long TEST_EXPIRED_MINUTE = 15L;
         private static final Long TEST_ID = 1L;
         private static final String TEST_NORMAL_KEYWORD = "TEST_NORMAL_KEYWORD";
 
