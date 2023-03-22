@@ -25,7 +25,7 @@ class BaseExceptionTest {
 
             @Test
             @DisplayName("에러코드와 메시지를 리턴한다")
-            void itReturns() {
+            void itReturnsErrorCodeAndErrorMessage() {
                 BaseException baseException = returnException();
                 Assertions.assertThat(baseException.getErrorCode()).isEqualTo(ErrorCode.NOT_FOUND_SEARCH);
                 Assertions.assertThat(baseException.getLogMessage()).isEqualTo(ErrorCode.NOT_FOUND_SEARCH.getMessage());

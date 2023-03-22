@@ -4,11 +4,11 @@ import com.james.api.dto.GetPopularKeywordListResponseDto;
 import com.james.api.enumeration.SortEnum;
 import com.james.api.feign.SearchKakaoFeignClient;
 import com.james.api.feign.SearchNaverFeignClient;
-import com.james.api.feign.dto.response.GetSearchKakaoBlogResponseDto;
-import com.james.api.feign.dto.response.GetSearchNaverBlogResponseDto;
+import com.james.api.feign.dto.GetSearchKakaoBlogResponseDto;
+import com.james.api.feign.dto.GetSearchNaverBlogResponseDto;
 import com.james.core.entity.History;
 import com.james.core.entity.Search;
-import com.james.core.exception.NaverApiPageIsTooLargeException;
+import com.james.core.exception.RequestPageIsTooLargeUsingNaverApiException;
 import com.james.core.exception.NoResponseFromServerException;
 import com.james.core.repository.HistoryRepository;
 import com.james.core.repository.SearchRepository;
@@ -332,7 +332,7 @@ class SearchServiceTest {
             void itGiveToGetBLogListFromRequest() {
 
                 Assertions.assertThatThrownBy(() -> searchService.getBlogList(TEST_NORMAL_KEYWORD, TEST_SORT, TEST_ABNORMAL_PAGE, TEST_NORMAL_SIZE))
-                        .isInstanceOf(NaverApiPageIsTooLargeException.class);
+                        .isInstanceOf(RequestPageIsTooLargeUsingNaverApiException.class);
 
             }
         }

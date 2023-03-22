@@ -2,7 +2,7 @@ package com.james.api.feign.decoder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.james.api.feign.dto.response.GetSearchNaverBlogResponseDto;
+import com.james.api.feign.dto.GetSearchNaverBlogResponseDto;
 import feign.Request;
 import feign.Response;
 import org.junit.jupiter.api.BeforeEach;

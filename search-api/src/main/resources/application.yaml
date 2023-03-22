@@ -1,16 +1,16 @@
 spring:
   jpa:
+    open-in-view: false
     show-sql: false
     database: h2
     properties:
       hibernate:
         format_sql: true
-        globally_quoted_identifiers: false
     hibernate:
       ddl-auto: update
   datasource:
     driver-class-name: org.h2.Driver
-    url: "jdbc:h2:~/search"
+    url: "jdbc:h2:mem:"
     username: sa
     password:
   h2:

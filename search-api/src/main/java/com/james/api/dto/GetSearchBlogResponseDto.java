@@ -21,10 +21,10 @@ public class GetSearchBlogResponseDto {
     // 블로그의 이름
     private String blogName;
 
-    // 검색 시스템에서 추출한 대표 미리보기 이미지 URL, 미리보기 크기 및 화질은 변경될 수 있음
+    // 검색 시스템에서 추출한 대표 미리보기 이미지 URL
     private String thumbNail;
 
-    // 블로그 글 작성시간, ISO 8601\n[YYYY]-[MM]-[DD]T[hh]:[mm]:[ss].000+[tz]
+    // 블로그 글 작성시간 (YYYY-MM-DDThh:mm:ss)
     private LocalDateTime dateTime;
 
 }
