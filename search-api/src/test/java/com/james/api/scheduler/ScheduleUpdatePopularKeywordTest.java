@@ -106,13 +106,12 @@ class ScheduleUpdatePopularKeywordTest {
 
             @Test
             @DisplayName("Search 가 삭제된다.")
-            void itDeleteExpiredHistoryAndUpdateSearch() {
+            void itDeleteSearch() {
 
                 scheduleUpdatePopularKeyword.deleteExpiredHistoryAndUpdateSearchCallCount();
 
                 ArgumentCaptor<Search> searchCaptor = ArgumentCaptor.forClass(Search.class);
                 verify(searchRepository, times(1)).delete(searchCaptor.capture());
-
             }
         }
     }
